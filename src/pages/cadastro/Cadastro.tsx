@@ -1,12 +1,72 @@
+import { useNavigate } from 'react-router-dom'
 import './Cadastro.css'
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+import type Usuario from '../../models/Usuario'
+import { cadastrarUsuario } from '../../services/Service'
+import {ClipLoader} from 'react-spinners'
+
 
 function Cadastro() {
+
+  const navigate = useNavigate () 
+  const [confirmarSenha, setConfirmarSenha] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [usuario, setUsuario] = useState<Usuario>({
+    id: 0,
+    nome: '',
+    usuario: '',
+    foto: '',
+    senha: ''
+  })
+
+  useEffect(() => {
+    if (usuario.id !== 0) {
+      
+      retornar ()
+    }
+  }, [usuario])
+
+  function retornar() {
+    navigate('/login')
+  }
+ 
+  function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
+    setUsuario({
+      ...usuario,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  function handleConfirmarSenha(e: ChangeEvent<HTMLInputElement>) {
+    setConfirmarSenha(e.target.value)
+  }
+
+  async function cadastrarNovoUsuario(e: FormEvent<HTMLFormElement>) {    
+    e.preventDefault()
+
+    if (confirmarSenha === usuario.senha && usuario.senha.length >= 8) {
+      setIsLoading(true)
+      try {
+      await cadastrarUsuario(`/usuarios/cadastra`, usuario, setUsuario)
+        alert('Usuário cadastrado com sucesso!')
+      } catch (error) {
+        alert('Erro ao cadastrar usuário! Tente novamente.')}
+      } else {
+        alert('Dados do usuário inconsistentes. Verifique as informações de cadastro.')
+        setUsuario({ ...usuario, senha: '' })
+        setConfirmarSenha('')
+      }
+   setIsLoading(false)
+  }
+
+
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 h-screen 
             place-items-center font-bold">
         <div className="fundoCadastro hidden lg:block"></div>
-        <form className='flex justify-center items-center flex-col w-2/3 gap-3' >
+        <form className='flex justify-center items-center flex-col w-2/3 gap-3'
+          onSubmit={cadastrarNovoUsuario}>
           <h2 className='text-slate-900 text-5xl'>Cadastrar</h2>
           <div className="flex flex-col w-full">
             <label htmlFor="nome">Nome</label>
@@ -16,7 +76,9 @@ function Cadastro() {
               name="nome"
               placeholder="Nome"
               className="border-2 border-slate-700 rounded p-2"
-             
+              value={usuario.nome}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+              
             />
           </div>
           <div className="flex flex-col w-full">
@@ -26,6 +88,8 @@ function Cadastro() {
               id="usuario"
               name="usuario"
               placeholder="Usuario"
+              value={usuario.usuario}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
               className="border-2 border-slate-700 rounded p-2"
             />
           </div>
@@ -36,6 +100,8 @@ function Cadastro() {
               id="foto"
               name="foto"
               placeholder="Foto"
+              value={usuario.foto}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
               className="border-2 border-slate-700 rounded p-2"
             />
           </div>
@@ -46,6 +112,8 @@ function Cadastro() {
               id="senha"
               name="senha"
               placeholder="Senha"
+              value={usuario.senha}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
               className="border-2 border-slate-700 rounded p-2"
             />
           </div>
@@ -56,6 +124,8 @@ function Cadastro() {
               id="confirmarSenha"
               name="confirmarSenha"
               placeholder="Confirmar Senha"
+              value={confirmarSenha}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleConfirmarSenha(e)}
               className="border-2 border-slate-700 rounded p-2"
             />
           </div>
@@ -63,6 +133,7 @@ function Cadastro() {
             <button 
                 type='reset'
                 className='rounded text-white bg-red-400 hover:bg-red-700 w-1/2 py-2'
+                onClick={retornar}
              >
                 Cancelar
             </button>
@@ -72,7 +143,12 @@ function Cadastro() {
                            hover:bg-indigo-900 w-1/2 py-2
                            flex justify-center' 
                 >
-              Cadastrar
+                {isLoading ? <ClipLoader 
+                color="#ffffff" 
+                size={24}
+                />:
+                <span>Cadastrar</span>}
+              
             </button>
           </div>
         </form>

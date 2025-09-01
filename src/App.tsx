@@ -1,16 +1,18 @@
-import Footer from "./components/footer/footer"
-import Navbar from "./components/navbar/navbar"
+import Footer from "./components/footer/Footer"
+import Navbar from "./components/navbar/Navbar"
 import Home from "./pages/home/Home"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import './App.css'
-import Login from "./assets/login/Login"
-import Cadastro from "./cadastro/cadastro"
+import Login from "./pages/login/Login"
+import Cadastro from "./pages/cadastro/Cadastro"
+import { AuthProvider } from "./contexts/AuthContext"
 
 
 
 function App() {
   return (
     <>
+    <AuthProvider>
         <BrowserRouter>
           <Navbar />
           <div className="min-h-[80vh]">
@@ -23,6 +25,7 @@ function App() {
           </div>
           <Footer />
         </BrowserRouter>
+        </AuthProvider>
     </>
   )
 }
