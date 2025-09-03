@@ -6,116 +6,128 @@ import type Tema from "../../../models/Tema";
 import { atualizar, buscar, cadastrar } from "../../../services/Service";
 
 function FormTema() {
-  const navigate = useNavigate();
 
-  const [tema, setTema] = useState<Tema>({} as Tema);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-  const { usuario, handleLogout } = useContext(AuthContext);
-  const token = usuario.token;
+    const [tema, setTema] = useState<Tema>({} as Tema)
 
-  const { id } = useParams<{ id: string }>();
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  async function buscarPorId(id: string) {
-    try {
-      await buscar(`/temas/${id}`, setTema, {
-        headers: { Authorization: token },
-      });
-    } catch (error: any) {
-      // ajuste o status conforme sua API (401/403)
-      if (error.toString().includes("401") || error.toString().includes("403")) {
-        handleLogout();
-      }
+    const { usuario, handleLogout } = useContext(AuthContext)
+    const token = usuario.token
+
+    const { id } = useParams<{ id: string }>();
+
+    async function buscarPorId(id: string) {
+        try {
+            await buscar(`/temas/${id}`, setTema, {
+                headers: { Authorization: token }
+            })
+        } catch (error: any) {
+            if (error.toString().includes('403')) {
+                handleLogout()
+            }
+        }
     }
-  }
 
-  useEffect(() => {
-    if (token === "") {
-      alert("Você precisa estar logado!");
-      navigate("/");
+    useEffect(() => {
+        if (token === '') {
+            alert('Você precisa estar logado!')
+            navigate('/')
+        }
+    }, [token])
+
+    useEffect(() => {
+        if (id !== undefined) {
+            buscarPorId(id)
+        }
+    }, [id])
+
+    function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
+        setTema({
+            ...tema,
+            [e.target.name]: e.target.value
+        })
     }
-  }, [token, navigate]);
 
-  useEffect(() => {
-    if (id !== undefined) {
-      buscarPorId(id);
+    function retornar() {
+        navigate("/temas")
     }
-  }, [id]); // intencional
 
-  function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
-    setTema({
-      ...tema,
-      [e.target.name]: e.target.value,
-    });
-  }
+    async function gerarNovoTema(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        setIsLoading(true)
 
-  function retornar() {
-    navigate("/temas");
-  }
+        if (id !== undefined) {
+            try {
+                await atualizar(`/temas`, tema, setTema, {
+                    headers: { 'Authorization': token }
+                })
+                alert('O Tema foi atualizado com sucesso!')
+            } catch (error: any) {
+                if (error.toString().includes('401')) {
+                    handleLogout();
+                } else {
+                    alert('Erro ao atualizar o tema.')
+                }
 
-  async function gerarNovoTema(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsLoading(true);
+            }
+        } else {
+            try {
+                await cadastrar(`/temas`, tema, setTema, {
+                    headers: { 'Authorization': token }
+                })
+                alert('O Tema foi cadastrado com sucesso!')
+            } catch (error: any) {
+                if (error.toString().includes('401')) {
+                    handleLogout();
+                } else {
+                    alert('Erro ao cadastrar o tema.')
+                }
 
-    try {
-      if (id !== undefined) {
-        // Se sua API espera o ID no corpo:
-        const temaParaEnviar: Tema = { ...tema, id: Number(id) as any };
+            }
+        }
 
-        await atualizar(`/temas`, temaParaEnviar, setTema, {
-          headers: { Authorization: token },
-        });
-
-        alert("O Tema foi atualizado com sucesso!");
-      } else {
-        await cadastrar('/temas,' tema, setTema, {
-          headers: { Authorization: token },
-        });
-
-        alert("O Tema foi cadastrado com sucesso!");
-      }
-
-      retornar();
-    } catch (error: any) {
-      if (error.toString().includes("401") || error.toString().includes("403")) {
-        handleLogout();
-      } else {
-        alert(id !== undefined ? "Erro ao atualizar o tema." : "Erro ao cadastrar o tema.");
-      }
-    } finally {
-      setIsLoading(false);
+        setIsLoading(false)
+        retornar()
     }
-  }
 
-  return (
-    <div className="container flex flex-col items-center justify-center mx-auto">
-      <h1 className="text-4xl text-center my-8">
-        {id === undefined ? "Cadastrar Tema" : "Editar Tema"}
-      </h1>
+    return (
+        <div className="container flex flex-col items-center justify-center mx-auto">
+            <h1 className="text-4xl text-center my-8">
+                {id === undefined ? 'Cadastrar Tema' : 'Editar Tema'}
+            </h1>
 
-      <form className="w-1/2 flex flex-col gap-4" onSubmit={gerarNovoTema}>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="descricao">Descrição do Tema</label>
-          <input
-            type="text"
-            placeholder="Descreva aqui seu tema"
-            name="descricao"
-            className="border-2 border-slate-700 rounded p-2"
-            value={tema.descricao || ""}
-            onChange={atualizarEstado}
-          />
+            <form className="w-1/2 flex flex-col gap-4" 
+                  onSubmit={gerarNovoTema} >
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="descricao">Descrição do Tema</label>
+                    <input
+                        type="text"
+                        placeholder="Descreva aqui seu tema"
+                        name='descricao'
+                        className="border-2 border-slate-700 rounded p-2"
+                        value={tema.descricao}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => atualizarEstado(e)}
+                    />
+                </div>
+                <button
+                    className="rounded text-slate-100 bg-indigo-400 
+                               hover:bg-indigo-800 w-1/2 py-2 mx-auto flex justify-center"
+                    type="submit">
+
+                    { isLoading ? 
+                            <ClipLoader 
+                                color="#ffffff" 
+                                size={24}
+                            /> : 
+                           <span>{id === undefined ? 'Cadastrar' : 'Atualizar'}</span>
+                    }
+
+                </button>
+            </form>
         </div>
-        <button
-          className="rounded text-slate-100 bg-indigo-400 hover:bg-indigo-800 w-1/2 py-2 mx-auto flex justify-center"
-          type="submit"
-        >
-          {isLoading ? <ClipLoader color="#ffffff" size={24} /> : (
-            <span>{id === undefined ? "Cadastrar" : "Atualizar"}</span>
-          )}
-        </button>
-      </form>
-    </div>
-  );
+    );
 }
 
 export default FormTema;
