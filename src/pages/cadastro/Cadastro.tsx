@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import './Cadastro.css'
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+import {ClipLoader} from 'react-spinners'
 import type Usuario from '../../models/Usuario'
 import { cadastrarUsuario } from '../../services/Service'
-import {ClipLoader} from 'react-spinners'
 
 
 function Cadastro() {
@@ -47,7 +47,7 @@ function Cadastro() {
     if (confirmarSenha === usuario.senha && usuario.senha.length >= 8) {
       setIsLoading(true)
       try {
-      await cadastrarUsuario(`/usuarios/cadastra`, usuario, setUsuario)
+      await cadastrarUsuario('usuarios/cadastra', usuario, setUsuario)
         alert('Usuário cadastrado com sucesso!')
       } catch (error) {
         alert('Erro ao cadastrar usuário! Tente novamente.')}
