@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-import './Login.css';
 import { useContext, useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import type UsuarioLogin from '../../models/UsuarioLogin';
@@ -84,7 +83,10 @@ function Login() {
                         </Link>
                     </p>
                 </form>
-                <div className="fundoLogin hidden lg:block"></div>
+                <div
+                    className="bg-[url('https://i.imgur.com/ZZFAmzo.jpg')] lg:block hidden bg-no-repeat 
+                    w-full min-h-screen bg-cover bg-center"
+                ></div>
             </div>
         </>
     );
