@@ -12,8 +12,8 @@ import Home from './pages/home/Home'
 import Login from './pages/login/Login'
 import Perfil from './pages/perfil/Perfil'
 import 'react-toastify/dist/ReactToastify.css'
-import Navbar from '../src/components/navbar/Navbar'
-import Footer from '../src/components/footer/Footer'
+import Navbar from './components/navbar/Naavbar'
+import Footer from './components/footer/Foooter'
 
 function App() {
 	return (
