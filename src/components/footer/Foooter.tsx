@@ -3,7 +3,7 @@ import { useContext, type ReactNode } from "react"
 import { AuthContext } from "../../contexts/AuthContext"
 
 
-function Footer() {
+function Foooter() {
 
     let data = new Date().getFullYear()
 
@@ -45,4 +45,4 @@ function Footer() {
     )
 }
 
-export default Footer
+export default Foooter

@@ -12,8 +12,8 @@ import Home from './pages/home/Home'
 import Login from './pages/login/Login'
 import Perfil from './pages/perfil/Perfil'
 import 'react-toastify/dist/ReactToastify.css'
-import Navbar from './components/navbar/Navbar'
-import Footer from './components/footer/Footer'
+import Naavbar from './components/navbar/Naavbar'
+import Foooter from './components/footer/Foooter'
 
 function App() {
 	return (
@@ -21,7 +21,7 @@ function App() {
 			<AuthProvider>
 				<ToastContainer />
 				<BrowserRouter>
-					<Navbar />
+					<Naavbar />
 					<div className="min-h-[80vh]">
 						<Routes>
 							<Route path="/" element={<Login />} />
@@ -38,7 +38,7 @@ function App() {
 							<Route path="/perfil" element={<Perfil />} />
 						</Routes>
 					</div>
-					< Footer/>
+					< Foooter/>
 				</BrowserRouter>
 			</AuthProvider>
 		</>
